@@ -1,6 +1,10 @@
 import AnimatedGlyph from './AnimatedGlyph.js';
 
-export default class TriangleGlyph extends AnimatedGlyph {
+export default class InfinityGlyph extends AnimatedGlyph {
+
+    constructor(p5, x, y, width) {
+        super(p5, x, y, width, p5.width / 256, p5.random(1500, 3000));
+    }
 
     draw() {
         const currentTime = this.p.millis();

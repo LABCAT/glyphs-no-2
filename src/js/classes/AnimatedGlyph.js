@@ -1,18 +1,18 @@
 export default class AnimatedGlyph {
-    constructor(p5, x, y, width) {
+    constructor(p5, x, y, width, startWidth = 0, lifetime = 0, direction = '') {
         this.p = p5;
         this.hue = this.p.random(0, 360);
         this.origin = this.p.createVector(x, y);
-        this.width = 0;
+        this.width = startWidth;
         this.maxWidth = width;
         this.rotation = 0;
-        this.lifeTime = this.p.random(5000, 15000);
+        this.lifeTime = lifetime ? lifetime : this.p.random(5000, 15000);
         this.startTime = this.p.millis();
         this.endTime = this.startTime + this.lifeTime;
         
         const randY =  this.p.random(0, this.p.height);
         const randX =  this.p.random(0, this.p.width);
-        this.direction = this.p.random(['left', 'right', 'up', 'down']);
+        this.direction = direction ? direction : this.p.random(['left', 'right', 'up', 'down']);
         switch (this.direction) {
             case 'left':
                 this.destination = this.p.createVector(0, randY);

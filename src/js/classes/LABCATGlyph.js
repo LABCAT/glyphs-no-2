@@ -3,10 +3,11 @@ import ShuffleArray from '../functions/ShuffleArray.js';
 
 export default class LABCATGlyph extends AnimatedGlyph {
 
-    constructor(p5, x, y, width) {
-        super(p5, x, y, width);
+    constructor(p5, x, y, width, shapeType, direction) {
+        super(p5, x, y, width, 0, p5.random(3000, 6000), direction);
 
         this.width = this.maxWidth / 4;
+        this.shapeType = shapeType;
 
         this.center = this.width / 2;
         
@@ -150,9 +151,9 @@ export default class LABCATGlyph extends AnimatedGlyph {
                 this.p.ellipse(this.center, this.center, this.satCircles['size'][i]);
             }
 
-            // draw the octagon that represents the brightness dimension
+            // draw the octagon/pentagon that represents the brightness dimension
             this.p.fill(this.hue, 100, 100, this.brightnessTrans);
-            this.octagon(this.center, this.center, this.width / 3);
+            this[this.shapeType](this.center, this.center, this.width / 3);
 
             //draw the stars that represent the hue dimension
             this.p.noStroke();
@@ -184,6 +185,26 @@ export default class LABCATGlyph extends AnimatedGlyph {
         const angle = this.p.TWO_PI / 8;
         this.p.beginShape();
         for (let a = this.p.TWO_PI/16; a < this.p.TWO_PI + this.p.TWO_PI/16; a += angle) {
+            const sx = x + this.p.cos(a) * radius;
+            const sy = y + this.p.sin(a) * radius;
+            this.p.vertex(sx, sy);
+        }
+        this.p.endShape(this.p.CLOSE);
+        this.p.angleMode(this.p.DEGREES);
+    }
+
+    /**
+     * function to draw a pentagon shape
+     * adapted from: https://p5js.org/examples/form-regular-polygon.html
+     * @param {Number} x  - x-coordinate of the hexagon
+     * @param {Number} y  - y-coordinate of the hexagon
+     * @param {Number} radius - radius of the hexagon
+     */
+    pentagon(x, y, radius) {
+        this.p.angleMode(this.p.RADIANS);
+        const angle = this.p.TWO_PI / 5;
+        this.p.beginShape();
+        for (let a = this.p.TWO_PI/10; a < this.p.TWO_PI + this.p.TWO_PI/10; a += angle) {
             const sx = x + this.p.cos(a) * radius;
             const sy = y + this.p.sin(a) * radius;
             this.p.vertex(sx, sy);

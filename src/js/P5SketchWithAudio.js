@@ -32,14 +32,19 @@ const P5SketchWithAudio = () => {
 
         p.PPQ = 3840 * 4;
 
+        p.backgroundGlyph = null;
+        
         p.animatedGlyphs = [];
+
+        p.animatedGlyphs2 = [];
 
         p.loadMidi = () => {
             Midi.fromUrl(midi).then(
                 function(result) {
-                    const noteSet1 = result.tracks[0].notes; // Synth 1 - metal swell
-                    const noteSet2 = result.tracks[3].notes; // Synth 2 - DnK - Glass
-                    const noteSet3 = result.tracks[4].notes; // Synth 3 - DreamPatch 3
+                    console.log(result);
+                    const noteSet1 = result.tracks[4].notes; // Sampler 1 - JP4 FactoryBass
+                    const noteSet2 = result.tracks[6].notes; // Sampler 2 - JP4 FatSaw2
+                    const noteSet3 = result.tracks[7].notes.filter((note) => note.midi >= 59); // Synth 3 - Yellow
                     const noteSet4 = result.tracks[5].notes; // Synth 4 - Groovy
                     const noteSet5 = result.tracks[1].notes; // Sampler 1 - GRANDPIANO
                     const noteSet6 = result.tracks[7].notes; // Synth 5 - Sweep Lead
@@ -48,10 +53,10 @@ const P5SketchWithAudio = () => {
                     p.scheduleCueSet(noteSet1, 'executeCueSet1');
                     p.scheduleCueSet(noteSet2, 'executeCueSet2');
                     p.scheduleCueSet(noteSet3, 'executeCueSet3');
-                    p.scheduleCueSet(noteSet4, 'executeCueSet4');
-                    p.scheduleCueSet(noteSet5, 'executeCueSet5');
-                    p.scheduleCueSet(noteSet6, 'executeCueSet6');
-                    p.scheduleCueSet(noteSet7, 'executeCueSet7');
+                    // p.scheduleCueSet(noteSet4, 'executeCueSet4');
+                    // p.scheduleCueSet(noteSet5, 'executeCueSet5');
+                    // p.scheduleCueSet(noteSet6, 'executeCueSet6');
+                    // p.scheduleCueSet(noteSet7, 'executeCueSet7');
                     p.scheduleCueSet(controlChanges[Object.keys(controlChanges)[0]], 'executeCueSet8');
                     p.audioLoaded = true;
                     document.getElementById("loader").classList.add("loading--complete");
@@ -89,11 +94,23 @@ const P5SketchWithAudio = () => {
             p.angleMode(p.DEGREES)
         }
 
+        p.bgHue = 0;
+
         p.bgOpacity = 0;
 
         p.draw = () => {
             if(p.audioLoaded && p.song.isPlaying()){
-                p.background(0, 0, 0, p.bgOpacity);
+                if(p.backgroundGlyph) {
+                    p.clear();
+                    p.backgroundGlyph.update();
+                    p.backgroundGlyph.draw();
+                }
+                p.background(p.bgHue, 100, 50, p.bgOpacity);
+                for (let i = 0; i < p.animatedGlyphs2.length; i++) {
+                    const glyph = p.animatedGlyphs2[i];
+                    glyph.update();
+                    glyph.draw();
+                }
                 for (let i = 0; i < p.animatedGlyphs.length; i++) {
                     const glyph = p.animatedGlyphs[i];
                     glyph.update();
@@ -103,21 +120,58 @@ const P5SketchWithAudio = () => {
         }
 
         p.executeCueSet1 = (note) => {
+            const { currentCue } = note,
+                vari = p.random(-p.width / 48, p.width / 48);
+            let x = p.width / 4 * 3 + vari,
+                shapeType = 'octagon',
+                direction = p.random(['up']);
+            if(currentCue % 22 === 1){
+                p.animatedGlyphs = [];
+            }
+            if(currentCue % 22 === 0 || (currentCue % 22 > 4 && currentCue % 22 < 10) || currentCue % 22 > 14) {
+                shapeType = 'pentagon';
+                direction = p.random(['down']);
+            }
+            if(currentCue % 22 === 0 || currentCue % 22 > 9) {
+                x = p.width / 4 + vari;
+            }
             p.animatedGlyphs.push(
-                new InfinityGlyph(p, p.width/2, p.height/2, p.width/16)
+                new LABCATGlyph(p, x, p.height/2 + vari, p.width/4, shapeType, direction)
             );
         }
 
         p.executeCueSet2 = (note) => {
-            p.animatedGlyphs.push(
-                new RectangleGlyph(p, p.width/2, p.height/2, p.width/16)
-            );
+            p.bgHue = p.random(0, 360);
+            p.backgroundGlyph = new FlowerGlyph(p, p.width/2, p.height/2, p.width/16);
         }
 
         p.executeCueSet3 = (note) => {
-            p.animatedGlyphs.push(
-                new TriangleGlyph(p, p.width/2, p.height/2, p.width/16)
-            );
+            const { currentCue } = note;
+
+            if(currentCue % 6 === 0 || currentCue % 6 > 4) {
+                p.animatedGlyphs2.push(
+                    new InfinityGlyph(p, p.width/2, p.height/2, p.width/4)
+                );
+                p.animatedGlyphs2.push(
+                    new InfinityGlyph(p, p.width/2, p.height/2, p.width/4)
+                );
+            }
+            else if(currentCue % 6 > 2) {
+                p.animatedGlyphs2.push(
+                    new TriangleGlyph(p, p.width/2, p.height/2, p.width/8)
+                );
+                p.animatedGlyphs2.push(
+                    new TriangleGlyph(p, p.width/2, p.height/2, p.width/8)
+                );
+            }
+            else {
+                p.animatedGlyphs2.push(
+                    new RectangleGlyph(p, p.width/2, p.height/2, p.width/8)
+                );
+                p.animatedGlyphs2.push(
+                    new RectangleGlyph(p, p.width/2, p.height/2, p.width/8)
+                );
+            }
         }
 
         p.executeCueSet4 = (note) => {

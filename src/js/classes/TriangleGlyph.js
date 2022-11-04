@@ -2,6 +2,10 @@ import AnimatedGlyph from './AnimatedGlyph.js';
 
 export default class TriangleGlyph extends AnimatedGlyph {
 
+    constructor(p5, x, y, width) {
+        super(p5, x, y, width, p5.width / 40, p5.random(1500, 3000));
+    }
+
     draw() {
         const x1 = 0 - (this.width/2),   
             y1 = 0 + (this.width/2), 
