@@ -4,7 +4,7 @@ import ShuffleArray from '../functions/ShuffleArray.js';
 export default class LABCATGlyph extends AnimatedGlyph {
 
     constructor(p5, x, y, width, shapeType, direction) {
-        super(p5, x, y, width, 0, p5.random(3000, 6000), direction);
+        super(p5, x, y, width, 0, p5.random(3000, 6000));
 
         this.width = this.maxWidth / 4;
         this.shapeType = shapeType;

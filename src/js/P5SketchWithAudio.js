@@ -49,15 +49,16 @@ const P5SketchWithAudio = () => {
                     const noteSet5 = result.tracks[1].notes; // Sampler 1 - GRANDPIANO
                     const noteSet6 = result.tracks[7].notes; // Synth 5 - Sweep Lead
                     const noteSet7 = result.tracks[6].notes; // Synth 6 - SynthBass2
-                    const controlChanges = Object.assign({},result.tracks[8].controlChanges); // Mixer Master Volumne
+                    const controlChanges = Object.assign({},result.tracks[2].controlChanges); // Filter 1
                     p.scheduleCueSet(noteSet1, 'executeCueSet1');
                     p.scheduleCueSet(noteSet2, 'executeCueSet2');
                     p.scheduleCueSet(noteSet3, 'executeCueSet3');
+                    p.scheduleCueSet(controlChanges[Object.keys(controlChanges)[0]], 'executeCueSet4');
                     // p.scheduleCueSet(noteSet4, 'executeCueSet4');
                     // p.scheduleCueSet(noteSet5, 'executeCueSet5');
                     // p.scheduleCueSet(noteSet6, 'executeCueSet6');
                     // p.scheduleCueSet(noteSet7, 'executeCueSet7');
-                    p.scheduleCueSet(controlChanges[Object.keys(controlChanges)[0]], 'executeCueSet8');
+                    
                     p.audioLoaded = true;
                     document.getElementById("loader").classList.add("loading--complete");
                     document.getElementById("play-icon").classList.remove("fade-out");
@@ -96,16 +97,17 @@ const P5SketchWithAudio = () => {
 
         p.bgHue = 0;
 
-        p.bgOpacity = 0;
+        p.bgOpacity = 0.3;
 
         p.draw = () => {
             if(p.audioLoaded && p.song.isPlaying()){
+                p.clear();
+                p.background(p.bgHue, 100, 50, p.bgOpacity);
                 if(p.backgroundGlyph) {
-                    p.clear();
+                    
                     p.backgroundGlyph.update();
                     p.backgroundGlyph.draw();
                 }
-                p.background(p.bgHue, 100, 50, p.bgOpacity);
                 for (let i = 0; i < p.animatedGlyphs2.length; i++) {
                     const glyph = p.animatedGlyphs2[i];
                     glyph.update();
@@ -121,8 +123,10 @@ const P5SketchWithAudio = () => {
 
         p.executeCueSet1 = (note) => {
             const { currentCue } = note,
-                vari = p.random(-p.width / 48, p.width / 48);
+                vari = p.random(-p.width / 48, p.width / 48),
+                size = currentCue >= 110 ? p.width / 8 : p.width / 8;
             let x = p.width / 4 * 3 + vari,
+                y = p.height / 4 + vari,
                 shapeType = 'octagon',
                 direction = p.random(['up']);
             if(currentCue % 22 === 1){
@@ -131,18 +135,23 @@ const P5SketchWithAudio = () => {
             if(currentCue % 22 === 0 || (currentCue % 22 > 4 && currentCue % 22 < 10) || currentCue % 22 > 14) {
                 shapeType = 'pentagon';
                 direction = p.random(['down']);
+                y = p.height / 4 * 3 + vari;
             }
             if(currentCue % 22 === 0 || currentCue % 22 > 9) {
                 x = p.width / 4 + vari;
             }
             p.animatedGlyphs.push(
-                new LABCATGlyph(p, x, p.height/2 + vari, p.width/4, shapeType, direction)
+                new LABCATGlyph(p, x, y, size, shapeType, direction)
             );
         }
 
+
         p.executeCueSet2 = (note) => {
+            const { currentCue } = note, 
+                x = (currentCue % 3) === 1 ? p.width / 5  : (currentCue % 3) === 2 ? p.width / 5 * 4 : p.width / 2,
+                direction = (currentCue % 3) === 1 ? 'right'  : (currentCue % 3) === 2 ? 'left' : p.random(['up', 'down']);
             p.bgHue = p.random(0, 360);
-            p.backgroundGlyph = new FlowerGlyph(p, p.width/2, p.height/2, p.width/16);
+            p.backgroundGlyph = new FlowerGlyph(p, x, p.height/2, p.width/16, direction, p.width * 1.5);
         }
 
         p.executeCueSet3 = (note) => {
@@ -175,42 +184,9 @@ const P5SketchWithAudio = () => {
         }
 
         p.executeCueSet4 = (note) => {
-            p.animatedGlyphs.push(
-                new EllipticalGlyph(p, p.width/2, p.height/2, p.width/16)
-            );
-            p.animatedGlyphs.push(
-                new EllipticalGlyph(p, p.width/2, p.height/2, p.width/16)
-            );
-        }
-
-        p.executeCueSet5 = (note) => {
-            p.animatedGlyphs.push(
-                new StarGlyph(p, p.width/2, p.height/2, p.width/16)
-            );
-        }
-
-        p.executeCueSet6 = (note) => {
-            p.animatedGlyphs.push(
-                new FlowerGlyph(p, p.width/2, p.height/2, p.width/16)
-            );
-
-            p.animatedGlyphs.push(
-                new FlowerGlyph(p, p.width/2, p.height/2, p.width/16)
-            );
-
-            p.animatedGlyphs.push(
-                new FlowerGlyph(p, p.width/2, p.height/2, p.width/16)
-            );
-        }
-
-        p.executeCueSet7 = (note) => {
-            p.animatedGlyphs.push(
-                new LABCATGlyph(p, p.width/2, p.height/2, p.width/16)
-            );
-        }
-
-        p.executeCueSet8 = (note) => {
-            p.bgOpacity = 0.3 - (note.value / 2);
+            if(p.backgroundGlyph){
+                p.backgroundGlyph.setOpacity(0.4 * note.value);
+            }
         }
 
         p.mousePressed = () => {

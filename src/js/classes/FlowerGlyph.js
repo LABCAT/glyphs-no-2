@@ -3,9 +3,10 @@ import ShuffleArray from '../functions/ShuffleArray.js';
 
 export default class FlowerGlyph extends AnimatedGlyph {
 
-    constructor(p5, x, y, width) {
-        super(p5, x, y, width, p5.width * 1.5, p5.random(3000, 6000));
+    constructor(p5, x, y, width, direction, size) {
+        super(p5, x, y, width, size, p5.random(5000, 10000), direction);
         this.hueSet = ShuffleArray([30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360]);
+        this.opacity = 0.4;
     }
 
     update() {
@@ -20,6 +21,10 @@ export default class FlowerGlyph extends AnimatedGlyph {
         }
     }
 
+    setOpacity(opacity) {
+        this.opacity = opacity;
+    }
+
     draw() {
         const currentTime = this.p.millis();
         if(currentTime < this.endTime){
@@ -32,7 +37,7 @@ export default class FlowerGlyph extends AnimatedGlyph {
             this.p.noStroke();
             for (let i = 0; i < 12; i ++) {
                 // this.p.stroke(this.hueSet[i % 4], 100, 100);
-                this.p.fill(this.hueSet[i % 4], 100, 50, 0.75);
+                this.p.fill(this.hueSet[i % 4], 100, 50, this.opacity);
                 this.p.ellipse(0, 30, this.width / 4, this.width);
                 this.p.rotate(30);
             }
