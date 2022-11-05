@@ -4,6 +4,8 @@ import "p5/lib/addons/p5.sound";
 import * as p5 from "p5";
 import { Midi } from '@tonejs/midi'
 import PlayIcon from './functions/PlayIcon.js';
+import ShuffleArray from './functions/ShuffleArray.js';
+
 import TriangleGlyph from './classes/TriangleGlyph.js';
 import RectangleGlyph from './classes/RectangleGlyph.js';
 import InfinityGlyph from './classes/InfinityGlyph.js';
@@ -145,13 +147,16 @@ const P5SketchWithAudio = () => {
             );
         }
 
+        p.backgroundGlyphOpacity = 0.4;
 
         p.executeCueSet2 = (note) => {
             const { currentCue } = note, 
                 x = (currentCue % 3) === 1 ? p.width / 5  : (currentCue % 3) === 2 ? p.width / 5 * 4 : p.width / 2,
-                direction = (currentCue % 3) === 1 ? 'right'  : (currentCue % 3) === 2 ? 'left' : p.random(['up', 'down']);
-            p.bgHue = p.random(0, 360);
-            p.backgroundGlyph = new FlowerGlyph(p, x, p.height/2, p.width/16, direction, p.width * 1.5);
+                direction = (currentCue % 3) === 1 ? 'right'  : (currentCue % 3) === 2 ? 'left' : p.random(['up', 'down']),
+                hueSet = ShuffleArray([30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360]);
+            p.bgHue = hueSet[0];
+            p.backgroundGlyph = new FlowerGlyph(p, x, p.height/2, p.width/16, direction, p.width * 1.5, hueSet);
+            p.backgroundGlyph.setOpacity(p.backgroundGlyphOpacity);
         }
 
         p.executeCueSet3 = (note) => {
@@ -184,8 +189,11 @@ const P5SketchWithAudio = () => {
         }
 
         p.executeCueSet4 = (note) => {
-            if(p.backgroundGlyph){
-                p.backgroundGlyph.setOpacity(0.4 * note.value);
+            const { currentCue } = note;
+            if(p.backgroundGlyph && currentCue > 1){
+                console.log(note.value);
+                p.backgroundGlyphOpacity = 0.8 * note.value;
+                p.backgroundGlyph.setOpacity(p.backgroundGlyphOpacity);
             }
         }
 

@@ -1,12 +1,11 @@
 import AnimatedGlyph from './AnimatedGlyph.js';
-import ShuffleArray from '../functions/ShuffleArray.js';
 
 export default class FlowerGlyph extends AnimatedGlyph {
 
-    constructor(p5, x, y, width, direction, size) {
+    constructor(p5, x, y, width, direction, size, hueSet) {
         super(p5, x, y, width, size, p5.random(5000, 10000), direction);
-        this.hueSet = ShuffleArray([30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360]);
-        this.opacity = 0.4;
+        this.hueSet = hueSet;
+        this.opacity = 0.3;
     }
 
     update() {
