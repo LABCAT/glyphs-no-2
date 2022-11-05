@@ -87,19 +87,20 @@ const P5SketchWithAudio = () => {
                     currentCue++;
                 }
             }
-        } 
+        }
+        
+        p.bgHue = 0;
+
+        p.bgOpacity = 0.4;
 
         p.setup = () => {
             p.canvas = p.createCanvas(p.canvasWidth, p.canvasHeight);
             p.background(0);
             p.colorMode(p.HSB);
             p.rectMode(p.CENTER);
-            p.angleMode(p.DEGREES)
+            p.angleMode(p.DEGREES);
+            p.bgHue = p.random(0, 360);
         }
-
-        p.bgHue = 0;
-
-        p.bgOpacity = 0.3;
 
         p.draw = () => {
             if(p.audioLoaded && p.song.isPlaying()){
